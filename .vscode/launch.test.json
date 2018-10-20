@@ -1,0 +1,30 @@
+{
+    "run": {
+        "default": "",
+        "items": [
+            {
+                "name": "AI",
+                "projectName": "AI",
+                "workingDirectory": "/Users/Alan/School/Competitions/Atomic Games/othello/sdks/java/AI",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    },
+    "debug": {
+        "default": "",
+        "items": [
+            {
+                "name": "AI",
+                "projectName": "AI",
+                "workingDirectory": "/Users/Alan/School/Competitions/Atomic Games/othello/sdks/java/AI",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    }
+}
