@@ -54,8 +54,13 @@ public class AI {
 		return false;
 	}
 
+	private boolean isSquareExists(int c, int r) {
+		return (c > -1 && c < 8 && r > -1 && r < 8);
+	}
+
 	private ArrayList<Node> getChildrenNodes(boolean isMax) {
 		int color, enemyColor;
+		int EMPTY = 0;
 		if (isMax) {
 			color = this.color;
 			enemyColor = this.enemyColor;
@@ -68,8 +73,52 @@ public class AI {
 
 		for (int i = 0; i < 8; i++)
 			for (int j = 0; j < 8; j++) {
-				if (board[i][j] == enemyColor)
+				if (board[i][j] == enemyColor) {
+					// Check square below
+					if (isSquareExists(i, j + 1))
+						if (board[i][j + 1] == EMPTY)
+							potentialMoves.add(new int[] {i, j + 1});
+					
+					// Check square above
+					if (isSquareExists(i, j - 1))
+						if (board[i][j - 1] == EMPTY)
+							potentialMoves.add(new int[] {i, j - 1});
+
+					// Check square left
+					if (isSquareExists(i - 1, j))
+						if (board[i - 1][j] == EMPTY)
+							potentialMoves.add(new int[] {i - 1, j});
+
+					// Check square right
+					if (isSquareExists(i + 1, j))
+						if (board[i + 1][j] == EMPTY)
+							potentialMoves.add(new int[] {i + 1, j});
+
+					// Check diagnonals
+
+					// Check square down and left
+					if (isSquareExists(i - 1, j + 1))
+						if (board[i - 1][j + 1] == EMPTY)
+							potentialMoves.add(new int[] {i - 1, j + 1});
+
+					// Check square down and right
+					if (isSquareExists(i + 1, j + 1))
+						if (board[i + 1][j + 1] == EMPTY)
+							potentialMoves.add(new int[] {i + 1, j + 1});
+
+					// Check square up and left
+					if (isSquareExists(i - 1, j - 1))
+						if (board[i - 1][j - 1] == EMPTY)
+							potentialMoves.add(new int[] {i - 1, j - 1});
+
+					// Check square up and right
+					if (isSquareExists(i + 1, j + 1))
+						if (board[i + 1][j + 1] == EMPTY)
+							potentialMoves.add(new int[] {i + 1, j + 1});
+				}
 			}
+
+			
 
 	}
 

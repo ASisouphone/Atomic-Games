@@ -13,7 +13,7 @@ public class Main {
 		try {
 			System.out.println("Connecting to " + ip + " at " + port);
 			Socket socket = new Socket(ip, port);
-			new Client(socket, moves).start();
+			new Client(socket, moves).startWithInput();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

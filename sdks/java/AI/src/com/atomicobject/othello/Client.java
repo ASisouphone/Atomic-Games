@@ -18,7 +18,7 @@ public class Client {
 
 	public Client(Socket socket, int[][] moves) {
 		try {
-			ai = new AI(moves);
+			//ai = new AI(moves);
 			input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new OutputStreamWriter(socket.getOutputStream());
 		} catch (IOException e) {
@@ -39,6 +39,7 @@ public class Client {
 		}
 		closeStreams();
 	}
+	Scanner reader = new Scanner(System.in);  // Reading from System.in
 
 	// Start client with user input
 	public void startWithInput() {
@@ -52,14 +53,13 @@ public class Client {
 				System.out.println("Enter a move: ");
 				inputMove[0] = reader.nextInt(); // Scans the next token of the input as an int.
 				inputMove[1] = reader.nextInt();
-				int[] move = ai.computeMove(state);
-				respondWithMove(move);
-				reader.close();
+				//int[] move = ai.computeMove(state);
+				respondWithMove(inputMove);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+		reader.close();
 		closeStreams();
 	}
 	
