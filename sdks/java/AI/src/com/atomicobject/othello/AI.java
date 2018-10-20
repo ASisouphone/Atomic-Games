@@ -18,6 +18,8 @@ public class AI {
 
 	public Stack<int[][]> stateStack;
 
+	private int[] bestMove;
+
 	public AI(int[][] moves) {
 		color = 1;
 		enemyColor = 2;
@@ -27,10 +29,13 @@ public class AI {
 	}
 
 	public int[] computeMove(GameState state) {
-
-		// CHANGE
-		System.out.println("AI returning canned move for game state - " + state);
-		return moveList.next();
+		color = state.getPlayer();
+		if (color == 1) enemyColor = 2;
+		else enemyColor = 1;
+		stateStack.push(state.getBoard());
+		Node root = new Node();
+		negamax(root, depth, -8000, 8000);
+		return bestMove;
 	}
 
 	private static int[][] cloneArray(int[][] src) {
@@ -43,7 +48,7 @@ public class AI {
 	}
 
 	private boolean isGameOver() {
-		return false;
+		return (getChildrenNodes(true).size() == 0 && getChildrenNodes(false).size() == 0);
 	}
 
 	private boolean isSquareExists(int r, int c) {
@@ -377,11 +382,12 @@ public class AI {
 			alpha = Integer.max(alpha, eval);
 			if (depth == this.depth) {
 				if (alpha == eval) {
-					// create bestMove here!
+					bestMove = new int[2];
+					bestMove[0] = child.r;
+					bestMove[1] = child.c;
 				}
 			}
 		}
-		return 0;
-
+		return eval;
 	}
 }

@@ -9,6 +9,10 @@ public class Node {
 
     public ArrayList<Node> children;
 
+    public Node(){
+        
+    }
+
     public Node(int c, int r, int[] d) {
         this.c = c;
         this.r = r;
