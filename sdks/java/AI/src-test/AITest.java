@@ -1,11 +1,14 @@
 import static org.junit.Assert.*;
 
+import java.net.Socket;
 import java.util.ArrayList;
 
 import org.junit.Test;
 
 import com.atomicobject.othello.AI;
+import com.atomicobject.othello.Client;
 import com.atomicobject.othello.GameState;
+import com.google.gson.Gson;
 
 
 public class AITest {
@@ -68,6 +71,56 @@ public class AITest {
 		ArrayList<com.atomicobject.othello.Node> tempList = ai.getChildrenNodes(true);
 		System.out.println(tempList.size());
 		assertEquals(tempList.size(), 4);
+		
+//		String ip = "127.0.0.1";
+//		int port = 1337;
+//		int[][] moves = new int[][] {};
+//		try {
+//			System.out.println("Connecting to " + ip + " at " + port);
+//			Socket socket = new Socket(ip, port);
+//			// Use startWithInput for input
+//			// Start normnal
+//			new Client(socket, moves).startWithInput();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		
+		
+		
+	}
+	
+	@Test
+	public void testDoMove () {
+		AI ai = new AI(new int[][] {});
+		GameState state = new GameState();
+		state.setPlayer(1);
+		state.setBoard(new int[][]{{0, 0, 0, 0, 0, 0, 0, 0},
+				                   {0, 0, 0, 0, 0, 0, 0, 0},
+				                   {0, 0, 0, 0, 0, 0, 0, 0},
+				                   {0, 0, 0, 1, 2, 0, 0, 0},
+				                   {0, 0, 0, 2, 1, 0, 0, 0},
+				                   {0, 0, 0, 0, 0, 0, 0, 0},
+				                   {0, 0, 0, 0, 0, 0, 0, 0},
+				                   {0, 0, 0, 0, 0, 0, 0, 0}});
+		ai.stateStack.push(state.getBoard());
+		
+		ai.doMove(3, 5, new int[] {3});
+		state.setBoard(ai.stateStack.peek());
+		System.out.println(state.toString());
+		
+//		String ip = "127.0.0.1";
+//		int port = 1337;
+//		int[][] moves = new int[][] {};
+//		try {
+//			System.out.println("Connecting to " + ip + " at " + port);
+//			Socket socket = new Socket(ip, port);
+//			// Use startWithInput for input
+//			// Start normnal
+//			new Client(socket, moves).startWithInput();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		
 		
 		
 	}

@@ -257,8 +257,105 @@ public class AI {
 		return children;
 	}
 
-	private void doMove(int c, int r, int[] d) {
+	public void doMove(int r, int c, int[] d) {
+		int[][] board = cloneArray(stateStack.peek());
+		int color, enemyColor;
+		if (stateStack.size() % 2 == 1) {
+			color = this.color;
+			enemyColor = this.enemyColor;
+		} else {
+			color = this.enemyColor;
+			enemyColor = this.color;
+		}
 		
+		board[r][c]=color;
+
+		for (int i = 0; i < d.length; i++) {
+			if (d[i] == 0) {
+				for (int j = 1; j < 8; j++) {
+					int r2 = r - j;
+					int c2 = c - j;
+					if (!isSquareExists(r2, c2)) break;
+					if (board[r2][c2] == enemyColor)
+						board[r2][c2] = color;
+					if (board[r2][c2] == color)
+						break;
+				}
+			} else if(d[i] == 1) {
+				for (int j = 1; j < 8; j++) {
+					int r2 = r - j;
+					int c2 = c;
+					if (!isSquareExists(r2, c2)) break;
+					if (board[r2][c2] == enemyColor)
+						board[r2][c2] = color;
+					if (board[r2][c2] == color)
+						break;
+				}
+			} else if(d[i] == 2) {
+				for (int j = 1; j < 8; j++) {
+					int r2 = r - j;
+					int c2 = c + j;
+					if (!isSquareExists(r2, c2)) break;
+					if (board[r2][c2] == enemyColor)
+						board[r2][c2] = color;
+					if (board[r2][c2] == color)
+						break;
+				}
+			} else if(d[i] == 3) {
+				for (int j = 1; j < 8; j++) {
+					int r2 = r;
+					int c2 = c - j;
+					if (!isSquareExists(r2, c2)) break;
+					if (board[r2][c2] == enemyColor)
+						board[r2][c2] = color;
+					if (board[r2][c2] == color)
+						break;
+				}
+			} else if(d[i] == 4) {
+				for (int j = 1; j < 8; j++) {
+					int r2 = r;
+					int c2 = c + j;
+					if (!isSquareExists(r2, c2)) break;
+					if (board[r2][c2] == enemyColor)
+						board[r2][c2] = color;
+					if (board[r2][c2] == color)
+						break;
+				}
+			} else if(d[i] == 5) {
+				for (int j = 1; j < 8; j++) {
+					int r2 = r + 1;
+					int c2 = c - 1;
+					if (!isSquareExists(r2, c2)) break;
+					if (board[r2][c2] == enemyColor)
+						board[r2][c2] = color;
+					if (board[r2][c2] == color)
+						break;
+				}
+			} else if(d[i] == 6) {
+				for (int j = 1; j < 8; j++) {
+					int r2 = r + 1;
+					int c2 = c;
+					if (!isSquareExists(r2, c2)) break;
+					if (board[r2][c2] == enemyColor)
+						board[r2][c2] = color;
+					if (board[r2][c2] == color)
+						break;
+				}
+			} else if(d[i] == 7) {
+				for (int j = 1; j < 8; j++) {
+					int r2 = r + 1;
+					int c2 = c + 1;
+					if (!isSquareExists(r2, c2)) break;
+					if (board[r2][c2] == enemyColor)
+						board[r2][c2] = color;
+					if (board[r2][c2] == color)
+						break;
+				}
+			}
+			
+		}
+
+		stateStack.push(board);
 	}
 
 	private void undoMove() {

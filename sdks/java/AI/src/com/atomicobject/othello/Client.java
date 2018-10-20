@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 import com.google.gson.Gson;
@@ -18,7 +20,7 @@ public class Client {
 
 	public Client(Socket socket, int[][] moves) {
 		try {
-			//ai = new AI(moves);
+			ai = new AI(moves);
 			input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new OutputStreamWriter(socket.getOutputStream());
 		} catch (IOException e) {
@@ -52,6 +54,30 @@ public class Client {
 				System.out.println("Enter a move: ");
 				inputMove[0] = reader.nextInt(); // Scans the next token of the input as an int.
 				inputMove[1] = reader.nextInt();
+				respondWithMove(inputMove);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			reader.close();
+		}
+		reader.close();
+		closeStreams();
+	}
+	
+	public void startWithRandValidInput() {
+		System.out.println("Starting client with input ...");
+		GameState state;
+		try {
+			while ((state = readStateFromServer()) != null) {
+				ai.stateStack.push(state.getBoard());
+				int[] inputMove = new int[2];
+				ArrayList<Node> tempList = ai.getChildrenNodes(true);
+				if (tempList.size() > 0) {
+					int rnd = new Random().nextInt(tempList.size());
+					inputMove[0]=tempList.get(rnd).c;
+					inputMove[1]=tempList.get(rnd).r;
+				}
+				System.out.println("Board:\n" + state.toString());
 				respondWithMove(inputMove);
 			}
 		} catch (Exception e) {
