@@ -259,11 +259,23 @@ public class AI {
 				}
 			}
 
+		if (children.size() == 0) {
+			children.add(new Node(-1, -1, null));
+		}
+
 		return children;
 	}
 
 	public void doMove(int r, int c, int[] d) {
 		int[][] board = cloneArray(stateStack.peek());
+
+		// If there is no move
+		if (r == -1 && c == -1) {
+			stateStack.push(board);
+			return;
+		}
+
+
 		int color, enemyColor;
 		if (stateStack.size() % 2 == 1) {
 			color = this.color;
