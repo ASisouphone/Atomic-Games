@@ -127,7 +127,7 @@ public class AI {
 						if (board[r][c] == color && j > 1) {
 							directions.add(0);
 							break;
-						}
+						} else break;
 					} else break;
 				}
 
@@ -144,7 +144,7 @@ public class AI {
 						if (board[r][c] == color && j > 1) {
 							directions.add(1);
 							break;
-						}
+						} else break;
 					} else break;
 				}
 
@@ -160,7 +160,7 @@ public class AI {
 						if (board[r][c] == color && j > 1) {
 							directions.add(2);
 							break;
-						}
+						} else break;
 					} else break;
 				}
 
@@ -176,7 +176,7 @@ public class AI {
 						if (board[r][c] == color && j > 1) {
 							directions.add(3);
 							break;
-						}
+						} else break;
 					} else break;
 				}
 
@@ -192,7 +192,7 @@ public class AI {
 						if (board[r][c] == color && j > 1) {
 							directions.add(4);
 							break;
-						}
+						} else break;
 					} else break;
 				}
 
@@ -208,7 +208,7 @@ public class AI {
 						if (board[r][c] == color && j > 1) {
 							directions.add(5);
 							break;
-						}
+						} else break;
 					} else break;
 				}
 
@@ -224,7 +224,7 @@ public class AI {
 						if (board[r][c] == color && j > 1) {
 							directions.add(6);
 							break;
-						}
+						} else break;
 					} else break;
 				}
 
@@ -240,7 +240,7 @@ public class AI {
 						if (board[r][c] == color && j > 1) {
 							directions.add(7);
 							break;
-						}
+						} else break;
 					} else break;
 				}
 

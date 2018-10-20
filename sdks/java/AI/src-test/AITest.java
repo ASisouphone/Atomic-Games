@@ -23,6 +23,10 @@ public class AITest {
 			this.d = d;
 		}
 	}
+	
+	private static int parsePort(String port) {
+		return Integer.parseInt(port);
+	}
 
 	
 	public void test() {
@@ -64,5 +68,7 @@ public class AITest {
 		ArrayList<com.atomicobject.othello.Node> tempList = ai.getChildrenNodes(true);
 		System.out.println(tempList.size());
 		assertEquals(tempList.size(), 4);
+		
+		
 	}
 }
