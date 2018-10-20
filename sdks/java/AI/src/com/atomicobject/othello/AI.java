@@ -7,6 +7,7 @@ import java.util.Random;
 
 import java.util.Stack;
 import java.util.ArrayList;
+import java.util.concurrent.TimeoutException;
 
 public class AI {
 	
@@ -21,6 +22,12 @@ public class AI {
 	public Stack<int[][]> stateStack;
 
 	private int[] bestMove;
+	
+	private long startTime;
+	
+	private long TIME_OUT;
+	
+	private int MAX_DEPTH = 30;
 
 	public AI(int[][] moves) {
 		color = 1;
@@ -30,6 +37,48 @@ public class AI {
 		// /moveList = Arrays.asList(moves).listIterator();
 	}
 
+//	public int[] computeMove(GameState state) {
+//		bestMove = null;
+//		stateStack.clear();
+//		System.out.println(state.toString());
+//		color = state.getPlayer();
+//		if (color == 1) enemyColor = 2;
+//		else enemyColor = 1;
+//		stateStack.push(state.getBoard());
+//		Node root = new Node();
+//		
+//		TIME_OUT = (long)state.getMaxTurnTime() - 2000;
+//		
+//		
+//		int eval = -8000;
+//		startTime = System.currentTimeMillis();
+//		//start timer
+//		try {
+//			while(depth < MAX_DEPTH) {
+//				eval = Integer.max(eval, negamax(root, depth, -8000, 8000));
+//				System.out.println("" + bestMove[0] + " " + bestMove[1]);
+//				depth++;
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			System.out.print("Failed at depth" + depth +"\n");
+//			//random move failsafe
+//	        if (bestMove == null) {
+//	        		System.out.print("Random!!!" +"\n");
+//	        		stateStack.clear();
+//	        		stateStack.push(state.getBoard());
+//	        		bestMove = new int[2];
+//	            ArrayList<Node> list =  getChildrenNodes(true);
+//	            int rand = new Random().nextInt(list.size());
+//	            bestMove[0] = list.get(rand).r;
+//	            bestMove[1] = list.get(rand).c;
+//	        }
+//			return bestMove;
+//		}
+//		return bestMove;
+//        
+//	}
+	
 	public int[] computeMove(GameState state) {
 		stateStack.clear();
 		System.out.println(state.toString());
@@ -38,10 +87,9 @@ public class AI {
 		else enemyColor = 1;
 		stateStack.push(state.getBoard());
 		Node root = new Node();
+		negamax(root, depth, -8000, 8000);
 		//negamax(root, depth, -8000, 8000);
-
-
-        //random move failsafe
+         //random move failsafe
         bestMove = new int[2];
         ArrayList<Node> list =  getChildrenNodes(true);
         int rand = new Random().nextInt(list.size());
@@ -60,7 +108,19 @@ public class AI {
 	}
 
 	private boolean isGameOver() {
-		return (getChildrenNodes(true).size() == 0 && getChildrenNodes(false).size() == 0);
+		ArrayList<Node> maxNodes = getChildrenNodes(true);
+		boolean maxNoMoves = false, minNoMoves = false;
+		ArrayList<Node> minNodes = getChildrenNodes(false);
+		if (maxNodes.size() == 1) {
+			if (maxNodes.get(0).c == -1)
+				maxNoMoves = true;
+		}
+		if (minNodes.size() == 1) {
+			if (minNodes.get(0).c == -1)
+				minNoMoves = true;
+		}
+		
+		return (minNoMoves && maxNoMoves);
 	}
 
 	private boolean isSquareExists(int r, int c) {
@@ -390,12 +450,110 @@ public class AI {
 	private void undoMove() {
 		stateStack.pop();
 	}
+	
+	private int evaluateState() {
+		if (winnerEval() != 0)
+			return winnerEval();
+		
+		return cornersCaputured() + mobilityEval() + greedyEval() + stabilityEval();
+	}
+	
+	private int winnerEval() {
+		if (isGameOver() && greedyEval2() > 0)
+			return 100000;
+		else if (isGameOver() && greedyEval2() > 0)
+			return -100000;
+		else
+			return 0;
+	}
+	
+	private int cornersCaputured() {
+		
+		
+		int goodCount = 0, badCount = 0;
+		int[][] board = stateStack.peek();
+		if (board[0][0] == color) goodCount++;
+		if (board[0][7] == color) goodCount++;
+		if (board[7][0] == color) goodCount++;
+		if (board[7][7] == color) goodCount++;
+		
+		if (board[0][0] == enemyColor) badCount++;
+		if (board[0][7] == enemyColor) badCount++;
+		if (board[7][0] == enemyColor) badCount++;
+		if (board[7][7] == enemyColor) badCount++;
+		if (goodCount == 0 && badCount == 0) return 0;
+		return ((goodCount - badCount) / (goodCount + badCount))*(20);
+	}
+	
+	private int mobilityEval() {
+		int goodCount = getChildrenNodes(true).size();
+		int badCount = getChildrenNodes(false).size();
+		
+		return ((goodCount - badCount)/(goodCount + badCount))*(20);
+	}
+	
+	private int stabilityEval() {
+		
+		int goodCount = 0, badCount = 0;
+		int[][] values = {{10,   -3,  2, 2, 2, 2, -3, 10},
+						  {-3,  -5, -1, -1, -1, -1, -5, -3},
+					      {2,   -1, 1, 0, 0, 1, -1, 2},
+					      {2,   -1, 0, 1, 1, 0, -1, 2},
+					      {2,   -1, 0, 1, 1, 0, -1, 2},
+					      {2,   -1, 1, 0, 0, 1, -1, 2},
+					      {-3,  -5, -1, -1, -1, -1, -5, -3},
+					      {10,   -3, 2, 2, 2, 2, -3,10}};
+		int[][] board = stateStack.peek();
+		for(int i = 0; i < 8; i++)
+			for(int j=0; j < 8; j++) {
+				if (board[i][j] == color)
+					goodCount += values[i][j];
+				if (board[i][j] == enemyColor) {
+					badCount += values[i][j];
+				}
+			}
+		if ((goodCount == 0 && badCount == 0) || (goodCount + badCount == 0)) return 0;
+		return ((goodCount - badCount ) / (goodCount + badCount))*20;
+	}
+	
+	private int greedyEval2() {
+		int[][] board = stateStack.peek();
+		int goodCount = 0, badCount = 0;
+		for (int i = 0; i < 8; i++) {
+			for(int j = 0; j < 8; j++) {
+				if (board[i][j] == color) goodCount++;
+				if (board[i][j] == enemyColor) badCount++;
+			}
+		}
+		return goodCount - badCount;
+	}
+	
+	private int greedyEval() {
+		
+		int[][] board = stateStack.peek();
+		int goodCount = 0, badCount = 0;
+		for (int i = 0; i < 8; i++) {
+			for(int j = 0; j < 8; j++) {
+				if (board[i][j] == color) goodCount++;
+				if (board[i][j] == enemyColor) badCount++;
+			}
+		}
+		
+		return ((goodCount - badCount) / (goodCount + badCount)) * 40;
+	}
 
 	private int negamax(Node node, int depth, int alpha, int beta) {
-		if (depth == 0 || isGameOver()) {
-			// evaluateState() relative to current player
-		}
+//		if (System.currentTimeMillis() - startTime>= TIME_OUT) {
+////			throw new TimeoutException("Timeout....");
+//		}
+		
 		boolean isMax = (stateStack.size() % 2 == 1);
+		if (depth == 0 || isGameOver()) {
+			if (isMax) return evaluateState();
+			else return -evaluateState();
+			
+		}
+		
 		node.children = getChildrenNodes(isMax);
 		int eval = -8000;
 		for (int i = 0; i < node.children.size(); i++) {
