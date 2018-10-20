@@ -7,19 +7,7 @@ import java.util.Stack;
 import java.util.ArrayList;
 
 public class AI {
-	class Node() {
-		public int c;
-		public int r;
-		public int[] d;
-
-		public ArrayList<Node> children;
-
-		public Node(int c, int r, int[] d) {
-			this.c = c;
-			this.r = r;
-			this.d = d;
-		}
-	}
+	
 	ListIterator<int[]> moveList;
 	
 	private int depth;
@@ -28,15 +16,19 @@ public class AI {
 
 	private int enemyColor;
 
-	private Stack<int[][]> stateStack;
+	public Stack<int[][]> stateStack;
 
 	public AI(int[][] moves) {
+		color = 1;
+		enemyColor = 2;
 		stateStack = new Stack<int[][]>();
 		depth = 3; // CHANGE DEPTH 
 		// /moveList = Arrays.asList(moves).listIterator();
 	}
 
 	public int[] computeMove(GameState state) {
+
+		// CHANGE
 		System.out.println("AI returning canned move for game state - " + state);
 		return moveList.next();
 	}
@@ -54,11 +46,11 @@ public class AI {
 		return false;
 	}
 
-	private boolean isSquareExists(int c, int r) {
+	private boolean isSquareExists(int r, int c) {
 		return (c > -1 && c < 8 && r > -1 && r < 8);
 	}
 
-	private ArrayList<Node> getChildrenNodes(boolean isMax) {
+	public ArrayList<Node> getChildrenNodes(boolean isMax) {
 		int color, enemyColor;
 		int EMPTY = 0;
 		if (isMax) {
@@ -68,28 +60,29 @@ public class AI {
 			color = this.enemyColor;
 			enemyColor = this.color;
 		}
+
 		int[][] board = stateStack.peek();
 		ArrayList<int[]> potentialMoves = new ArrayList<int[]>();
-
+		ArrayList<Node> children = new ArrayList<Node>();
 		for (int i = 0; i < 8; i++)
 			for (int j = 0; j < 8; j++) {
 				if (board[i][j] == enemyColor) {
-					// Check square below
+					// Check square right
 					if (isSquareExists(i, j + 1))
 						if (board[i][j + 1] == EMPTY)
 							potentialMoves.add(new int[] {i, j + 1});
 					
-					// Check square above
+					// Check square left
 					if (isSquareExists(i, j - 1))
 						if (board[i][j - 1] == EMPTY)
 							potentialMoves.add(new int[] {i, j - 1});
 
-					// Check square left
+					// Check square above
 					if (isSquareExists(i - 1, j))
 						if (board[i - 1][j] == EMPTY)
 							potentialMoves.add(new int[] {i - 1, j});
 
-					// Check square right
+					// Check square down
 					if (isSquareExists(i + 1, j))
 						if (board[i + 1][j] == EMPTY)
 							potentialMoves.add(new int[] {i + 1, j});
@@ -97,9 +90,9 @@ public class AI {
 					// Check diagnonals
 
 					// Check square down and left
-					if (isSquareExists(i - 1, j + 1))
-						if (board[i - 1][j + 1] == EMPTY)
-							potentialMoves.add(new int[] {i - 1, j + 1});
+					if (isSquareExists(i + 1, j - 1))
+						if (board[i + 1][j - 1] == EMPTY)
+							potentialMoves.add(new int[] {i + 1, j - 1});
 
 					// Check square down and right
 					if (isSquareExists(i + 1, j + 1))
@@ -112,18 +105,160 @@ public class AI {
 							potentialMoves.add(new int[] {i - 1, j - 1});
 
 					// Check square up and right
-					if (isSquareExists(i + 1, j + 1))
-						if (board[i + 1][j + 1] == EMPTY)
-							potentialMoves.add(new int[] {i + 1, j + 1});
+					if (isSquareExists(i - 1, j + 1))
+						if (board[i - 1][j + 1] == EMPTY)
+							potentialMoves.add(new int[] {i - 1, j + 1});
 				}
 			}
 
-			
+			for (int i = 0; i < potentialMoves.size(); i++) {
+				ArrayList<Integer> directions = new ArrayList<Integer>();
+				int[] m = potentialMoves.get(i);
+				// Check Direction 0: up, left of potential
+				for (int j = 1; j < 8; j++) {
+					int r = m[0] - j;
+					int c = m[1] - j;
+					
+					if (isSquareExists(r, c)) {
+						if (board[r][c] == EMPTY) break;
 
+						if (board[r][c] == enemyColor) continue;
+
+						if (board[r][c] == color && j > 1) {
+							directions.add(0);
+							break;
+						}
+					} else break;
+				}
+
+					// Check Direction 1: up
+				for (int j = 1; j < 8; j++) {
+					int r = m[0] - j;
+					int c = m[1];
+					
+					if (isSquareExists(r, c)) {
+						if (board[r][c] == EMPTY) break;
+
+						if (board[r][c] == enemyColor) continue;
+
+						if (board[r][c] == color && j > 1) {
+							directions.add(1);
+							break;
+						}
+					} else break;
+				}
+
+				// Check Direction 2: up, right
+				for (int j = 1; j < 8; j++) {
+					int c = m[1] + j;
+					int r = m[0] - j;
+					if (isSquareExists(r, c)) {
+						if (board[r][c] == EMPTY) break;
+
+						if (board[r][c] == enemyColor) continue;
+
+						if (board[r][c] == color && j > 1) {
+							directions.add(2);
+							break;
+						}
+					} else break;
+				}
+
+				// Check Direction 3: left
+				for (int j = 1; j < 8; j++) {
+					int c = m[1] - j;
+					int r = m[0];
+					if (isSquareExists(r, c)) {
+						if (board[r][c] == EMPTY) break;
+
+						if (board[r][c] == enemyColor) continue;
+
+						if (board[r][c] == color && j > 1) {
+							directions.add(3);
+							break;
+						}
+					} else break;
+				}
+
+				// Check Direction 4: right
+				for (int j = 1; j < 8; j++) {
+					int c = m[1] + j;
+					int r = m[0];
+					if (isSquareExists(r, c)) {
+						if (board[r][c] == EMPTY) break;
+
+						if (board[r][c] == enemyColor) continue;
+
+						if (board[r][c] == color && j > 1) {
+							directions.add(4);
+							break;
+						}
+					} else break;
+				}
+
+				// Check Direction 5: down, left
+				for (int j = 1; j < 8; j++) {
+					int c = m[1] - j;
+					int r = m[0] + j;
+					if (isSquareExists(r, c)) {
+						if (board[r][c] == EMPTY) break;
+
+						if (board[r][c] == enemyColor) continue;
+
+						if (board[r][c] == color && j > 1) {
+							directions.add(5);
+							break;
+						}
+					} else break;
+				}
+
+				// Check Direction 6: down
+				for (int j = 1; j < 8; j++) {
+					int c = m[1];
+					int r = m[0] + j;
+					if (isSquareExists(r, c)) {
+						if (board[r][c] == EMPTY) break;
+
+						if (board[r][c] == enemyColor) continue;
+
+						if (board[r][c] == color && j > 1) {
+							directions.add(6);
+							break;
+						}
+					} else break;
+				}
+
+				// Check Direction 7: down, right
+				for (int j = 1; j < 8; j++) {
+					int c = m[1] + j;
+					int r = m[0] + j;
+					if (isSquareExists(r, c)) {
+						if (board[r][c] == EMPTY) break;
+
+						if (board[r][c] == enemyColor) continue;
+
+						if (board[r][c] == color && j > 1) {
+							directions.add(7);
+							break;
+						}
+					} else break;
+				}
+
+				if (directions.size() > 0) {
+					int[] d = new int[directions.size()];
+					for (int j = 0; j < directions.size(); j++) {
+						d[j] = directions.get(j);
+					}
+
+					children.add(new Node(m[0], m[1], d));
+				}
+			}
+
+		return children;
 	}
 
 	private void doMove(int c, int r, int[] d) {
-
+		
 	}
 
 	private void undoMove() {
@@ -149,7 +284,7 @@ public class AI {
 				}
 			}
 		}
-
+		return 0;
 
 	}
 }
