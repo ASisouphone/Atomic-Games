@@ -13,7 +13,7 @@ public class Node {
         
     }
 
-    public Node(int c, int r, int[] d) {
+    public Node(int r, int c, int[] d) {
         this.c = c;
         this.r = r;
         this.d = d;

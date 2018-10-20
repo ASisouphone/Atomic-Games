@@ -2,6 +2,8 @@ package com.atomicobject.othello;
 
 import java.util.Arrays;
 import java.util.ListIterator;
+import java.util.Random;
+
 
 import java.util.Stack;
 import java.util.ArrayList;
@@ -29,12 +31,22 @@ public class AI {
 	}
 
 	public int[] computeMove(GameState state) {
+		stateStack.clear();
+		System.out.println(state.toString());
 		color = state.getPlayer();
 		if (color == 1) enemyColor = 2;
 		else enemyColor = 1;
 		stateStack.push(state.getBoard());
 		Node root = new Node();
-		negamax(root, depth, -8000, 8000);
+		//negamax(root, depth, -8000, 8000);
+
+
+        //random move failsafe
+        bestMove = new int[2];
+        ArrayList<Node> list =  getChildrenNodes(true);
+        int rand = new Random().nextInt(list.size());
+        bestMove[0] = list.get(rand).r;
+        bestMove[1] = list.get(rand).c;
 		return bestMove;
 	}
 
