@@ -90,11 +90,11 @@ public class AI {
 		negamax(root, depth, -8000, 8000);
 		//negamax(root, depth, -8000, 8000);
          //random move failsafe
-        bestMove = new int[2];
-        ArrayList<Node> list =  getChildrenNodes(true);
-        int rand = new Random().nextInt(list.size());
-        bestMove[0] = list.get(rand).r;
-        bestMove[1] = list.get(rand).c;
+//        bestMove = new int[2];
+//        ArrayList<Node> list =  getChildrenNodes(true);
+//        int rand = new Random().nextInt(list.size());
+//        bestMove[0] = list.get(rand).r;
+//        bestMove[1] = list.get(rand).c;
 		return bestMove;
 	}
 
@@ -455,19 +455,19 @@ public class AI {
 		if (winnerEval() != 0)
 			return winnerEval();
 		
-		return cornersCaputured() + mobilityEval() + greedyEval() + stabilityEval();
+		return (int)(cornersCaputured() + mobilityEval() + greedyEval() + stabilityEval());
 	}
 	
 	private int winnerEval() {
 		if (isGameOver() && greedyEval2() > 0)
 			return 100000;
-		else if (isGameOver() && greedyEval2() > 0)
+		else if (isGameOver() && greedyEval2() < 0)
 			return -100000;
 		else
 			return 0;
 	}
 	
-	private int cornersCaputured() {
+	private float cornersCaputured() {
 		
 		
 		int goodCount = 0, badCount = 0;
@@ -485,23 +485,23 @@ public class AI {
 		return ((goodCount - badCount) / (goodCount + badCount))*(20);
 	}
 	
-	private int mobilityEval() {
+	private float mobilityEval() {
 		int goodCount = getChildrenNodes(true).size();
 		int badCount = getChildrenNodes(false).size();
 		
 		return ((goodCount - badCount)/(goodCount + badCount))*(20);
 	}
 	
-	private int stabilityEval() {
+	private float stabilityEval() {
 		
 		int goodCount = 0, badCount = 0;
 		int[][] values = {{10,   -3,  2, 2, 2, 2, -3, 10},
-						  {-3,  -5, -1, -1, -1, -1, -5, -3},
+						  {-3,  -15, -1, -1, -1, -1, -15, -3},
 					      {2,   -1, 1, 0, 0, 1, -1, 2},
 					      {2,   -1, 0, 1, 1, 0, -1, 2},
 					      {2,   -1, 0, 1, 1, 0, -1, 2},
 					      {2,   -1, 1, 0, 0, 1, -1, 2},
-					      {-3,  -5, -1, -1, -1, -1, -5, -3},
+					      {-3,  -15, -1, -1, -1, -1, -15, -3},
 					      {10,   -3, 2, 2, 2, 2, -3,10}};
 		int[][] board = stateStack.peek();
 		for(int i = 0; i < 8; i++)
@@ -513,7 +513,7 @@ public class AI {
 				}
 			}
 		if ((goodCount == 0 && badCount == 0) || (goodCount + badCount == 0)) return 0;
-		return ((goodCount - badCount ) / (goodCount + badCount))*20;
+		return ((goodCount - badCount ) / (goodCount + badCount))*40;
 	}
 	
 	private int greedyEval2() {
@@ -528,7 +528,7 @@ public class AI {
 		return goodCount - badCount;
 	}
 	
-	private int greedyEval() {
+	private float greedyEval() {
 		
 		int[][] board = stateStack.peek();
 		int goodCount = 0, badCount = 0;
@@ -539,7 +539,7 @@ public class AI {
 			}
 		}
 		
-		return ((goodCount - badCount) / (goodCount + badCount)) * 40;
+		return ((goodCount - badCount) / (goodCount + badCount)) * 20;
 	}
 
 	private int negamax(Node node, int depth, int alpha, int beta) {
